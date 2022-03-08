@@ -1,0 +1,202 @@
+<section id="tabs" class="container">
+    <div class="row text-left">
+        <!--Tabset Starts-->
+        <div class="col-md-12 col-lg-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-body">
+                        <ngb-tabset>
+                            <ngb-tab>
+                                <ng-template ngbTabTitle><i class="ft-file"></i> Datos Generales</ng-template>
+                                <ng-template ngbTabContent>
+                                    <form class="row" [formGroup]="corporativoForm" (ngSubmit)="onSubmit()">
+                                        <div class="col-md-2">
+                                            <div class="media d-flex flex-column align-items-center mt-2">
+                                                <a href="javascript:;">
+                                                    <img [src]="img"
+                                                        onerror="this.src='../../assets/img/error/not-found.jpeg'"
+                                                        alt="user view avatar" class="users-avatar-shadow rounded"
+                                                        height="140" width="140">
+                                                </a>
+                                                <div class="media-body mt-2">
+                                                    <h4>
+                                                        <span class="users-view-name">{{title}}</span>
+                                                        <!-- <span class="text-muted font-medium-1">
+                                          <span>@</span>
+                                          <span class="users-view-username">dean3004</span>
+                                        </span> -->
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <fieldset class="form-group">
+                                                <label for="nombreCorto">NOMBRE CORTO</label>
+                                                <input type="text" class="form-control" id="nombreCorto"
+                                                    formControlName="nombreCorto">
+                                            </fieldset>
+
+                                            <fieldset class="form-group">
+                                                <label for="fechaIncorporacion">FECHA DE INCORPORACIÓN *</label>
+                                                <div class="input-group">
+                                                    <input class="form-control" placeholder="yyyy-mm-dd" name="dp"
+                                                        formControlName="fechaIncorporacion" ngbDatepicker
+                                                        #d2="ngbDatepicker">
+                                                    <div class="input-group-append">
+                                                        <div class="input-group-text" (click)="d2.toggle()">
+                                                            <i class="fa fa-calendar" style="cursor: pointer;"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+
+                                            <fieldset class="form-group">
+                                                <label for="status">STATUS *</label>
+                                                <ng-select [items]="statusList" bindLabel="name"
+                                                    placeholder="Selecciona" formControlName="status">
+                                                </ng-select>
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <fieldset class="form-group">
+                                                <label for="nombreCompleto">NOMBRE COMPLETO</label>
+                                                <input type="text" class="form-control" id="nombreCompleto"
+                                                    formControlName="nombreCompleto">
+                                            </fieldset>
+                                            <fieldset class="form-group">
+                                                <label for="urlDelSistema">URL DEL SISTEMA *</label>
+                                                <div class="input-group mb-3">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"
+                                                            id="basic-addon3">https://devschoolcloud.com/sa/#/</span>
+                                                    </div>
+                                                    <input type="text" class="form-control" id="urlDelSistema"
+                                                        formControlName="urlDelSistema">
+                                                </div>
+                                            </fieldset>
+                                            <fieldset class="form-group d-flex justify-content-end pt-2 mb-0">
+                                                <a *ngIf="isEdit" type="button" routerLink="../../"
+                                                    class="btn btn-secondary mr-1 mb-1">Regresar</a>
+                                                <button *ngIf="!isEdit" type="button" (click)="isOnEdit()"
+                                                    class="btn btn-secondary mr-1 mb-1">Cancelar</button>
+                                                <button *ngIf="isEdit" type="button" (click)="isOnEdit()"
+                                                    class="btn btn-primary mr-1 mb-1">Editar</button>
+                                                <button *ngIf="!isEdit" type="submit"
+                                                    class="btn btn-primary mr-1 mb-1">Guardar</button>
+                                            </fieldset>
+                                        </div>
+                                    </form>
+                                </ng-template>
+                            </ngb-tab>
+                            <ngb-tab>
+                                <ng-template ngbTabTitle><i class="ft-users"></i> Contactos</ng-template>
+                                <ng-template ngbTabContent>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="media d-flex flex-column align-items-center mt-2">
+                                                <a href="javascript:;">
+                                                    <img [src]="img"
+                                                        onerror="this.src='../../assets/img/error/not-found.jpeg'"
+                                                        alt="user view avatar" class="users-avatar-shadow rounded"
+                                                        height="140" width="140">
+                                                </a>
+                                                <div class="media-body mt-2">
+                                                    <h4>
+                                                        <span class="users-view-name">{{title}}</span>
+                                                        <!-- <span class="text-muted font-medium-1">
+                                          <span>@</span>
+                                          <span class="users-view-username">dean3004</span>
+                                        </span> -->
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ngx-datatable class="bootstrap core-bootstrap col-md-10"
+                                            [columnMode]="ColumnMode.force" [headerHeight]="50" [footerHeight]="50"
+                                            rowHeight="auto" [limit]="limitRef" [rows]="rows$ | async"
+                                            [scrollbarH]="true" [columns]="columns">
+                                            <ngx-datatable-column name="NOMBRE" prop="S_Nombre" [width]="120">
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column name="PUESTO" prop="S_Puesto" [width]="100">
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column name="TELEFONO" prop="N_TelefonoFijo" [width]="120">
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column name="CELULAR" prop="N_TelefonoMovil" [width]="120">
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column name="EMAIL" prop="S_Email," [width]="120">
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column name="OBSERVACIONES" prop="S_Comentarios"
+                                                [width]="120">
+                                            </ngx-datatable-column>
+                                            <ngx-datatable-column name="ACCIONES" [width]="50">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <a [routerLink]="" (click)="editContacto(row)"><i
+                                                            class="ft-edit text-info cursor-pointer"></i></a>
+                                                    <a [routerLink]="" (click)="deleteContacto(row.id)"><i
+                                                            class=" ml-2 ft-trash text-danger cursor-pointer"></i></a>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                        </ngx-datatable>
+                                    </div>
+
+
+                                    <form class="row" [formGroup]="contactosForm" (ngSubmit)="onSubmitContactos()">
+
+                                        <div class="col-md-3">
+                                            <fieldset class="form-group">
+                                                <label for="S_Nombre">NOMBRE</label>
+                                                <input type="text" class="form-control" id="S_Nombre"
+                                                    formControlName="S_Nombre">
+                                            </fieldset>
+
+                                            <fieldset class="form-group">
+                                                <label for="N_TelefonoFijo">TELÉFONO FIJO</label>
+                                                <input type="text" class="form-control" id="N_TelefonoFijo"
+                                                    formControlName="N_TelefonoFijo">
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <fieldset class="form-group">
+                                                <label for="S_Puesto">PUESTO</label>
+                                                <input type="text" class="form-control" id="S_Puesto"
+                                                    formControlName="S_Puesto">
+                                            </fieldset>
+                                            <fieldset class="form-group">
+                                                <label for="N_TelefonoMovil">TELÉFONO MÓVIL</label>
+                                                <input type="text" class="form-control" id="N_TelefonoMovil"
+                                                    formControlName="N_TelefonoMovil">
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <fieldset class="form-group">
+                                                <label for="S_Comentarios">COMENTARIOS</label>
+                                                <input type="text" class="form-control" id="S_Comentarios"
+                                                    formControlName="S_Comentarios">
+                                            </fieldset>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <fieldset class="form-group">
+                                                        <label for="S_Email">EMAIL</label>
+                                                        <input type="text" class="form-control" id="S_Email"
+                                                            formControlName="S_Email">
+                                                    </fieldset>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <fieldset class="form-group d-flex justify-content-end pt-3 mb-0">
+                                                        <button type="submit"
+                                                            class="btn btn-primary mr-1 mb-1">Agregar Contactos</button>
+                                                    </fieldset>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </form>
+                                </ng-template>
+                            </ngb-tab>
+                        </ngb-tabset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
