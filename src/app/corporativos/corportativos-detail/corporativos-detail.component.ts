@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CorporativosService } from '../_services/corporativos.service';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
@@ -6,7 +6,7 @@ import { Corporativo, CorporativoModel } from '../_models/corporativo';
 import { NgbDateStruct, NgbDatepickerI18n, NgbCalendar} from '@ng-bootstrap/ng-bootstrap';
 import { getObjectDate, getStringDate } from '../../helpers/util/dateUtil';
 import { DatatableComponent, ColumnMode } from '@swimlane/ngx-datatable';
-import { forkJoin, Observable, of, zip } from 'rxjs';
+import { forkJoin, Observable, of, Subscription, zip } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 
@@ -15,7 +15,7 @@ import { map } from 'rxjs/operators';
   templateUrl: './corporativos-detail.component.html',
   styleUrls: ['./corporativos-detail.component.scss']
 })
-export class CorporativosDetailComponent implements OnInit {
+export class CorporativosDetailComponent implements OnInit, OnDestroy {
   @ViewChild(DatatableComponent) table: DatatableComponent;
 
   // row data
@@ -35,9 +35,12 @@ export class CorporativosDetailComponent implements OnInit {
 
   public id: string;
   public img: string = '../../assets/img/error/not-found.jpeg';
-  public title: string = '';
+  public title = null;
   public fkAsignado: number;
   public isEdit: boolean = true;
+  public isEditContacto: boolean = true;
+
+  public subscriptions: Subscription[] = [];
 
   public corporativoForm = this.fb.group({
     nombreCorto: {value: '', disabled: true},
@@ -75,14 +78,21 @@ export class CorporativosDetailComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit() {
-    console.log(this.form["status"].value);
-    this.corporativo = new CorporativoModel(this.id, this.form["nombreCorto"].value, this.form["nombreCompleto"].value, this.img, this.form["status"].value.value, getStringDate(this.form["fechaIncorporacion"].value), this.fkAsignado);
-    this.corporativosService.saveDetailCorporativos(this.id, this.corporativo).subscribe(
+    this.corporativo = new CorporativoModel(
+      this.id, this.form["nombreCorto"].value, 
+      this.form["nombreCompleto"].value, 
+      this.img, this.form["status"].value.value, 
+      getStringDate(this.form["fechaIncorporacion"].value), 
+      this.fkAsignado);
+
+      const subs = this.corporativosService.saveDetailCorporativos(this.id, this.corporativo).subscribe(
       res => {
-        console.log(res);
         this.isOnEdit();
-      }
-    );
+        this.refreshData();
+      });
+
+      this.subscriptions.push(subs);
+
   }
 
   isOnEdit(){
@@ -95,37 +105,47 @@ export class CorporativosDetailComponent implements OnInit {
   }
 
   deleteContacto(id){
-    this.corporativosService.deleteContactos(id).subscribe(
+    const subs = this.corporativosService.deleteContactos(id).subscribe(
       res => {
         this.refreshData();
       });
+    
+    this.subscriptions.push(subs);
   }
 
   editContacto(contacto){
+    this.isEditContacto = true;
     this.contactosForm.setValue(contacto);
   }
 
   onSubmitContactos(){
+
+    let subs;
     this.contactosForm.controls["tw_corporativo_id"].setValue(this.id);
+    
     if(this.contactosForm.controls["id"].value){
-      this.corporativosService.editContactos(this.contactosForm.controls["id"].value, this.contactosForm.value).subscribe(
+       subs = this.corporativosService.editContactos(this.contactosForm.controls["id"].value, this.contactosForm.value).subscribe(
         res=>{
           this.refreshData();
           this.contactosForm.reset();
         }
       )
     }else{
-      this.corporativosService.saveContactos(this.contactosForm.value).subscribe(
+       subs =  this.corporativosService.saveContactos(this.contactosForm.value).subscribe(
         res=>{
           this.refreshData();
           this.contactosForm.reset();
         }
       )
     }
+    this.subscriptions.push(subs);
+    setTimeout(()=>{
+      this.isEditContacto = false;
+    },1000);
   }
   
   refreshData(){
-  this.corporativosService.detailCorporativos(this.id).subscribe(
+  const subs = this.corporativosService.detailCorporativos(this.id).subscribe(
     (res: Corporativo) => {
       console.log(res);
       this.img = res.S_LogoURL;
@@ -137,9 +157,25 @@ export class CorporativosDetailComponent implements OnInit {
       this.form["nombreCompleto"].setValue(res.S_NombreCompleto);
       this.form["urlDelSistema"].setValue(res.S_SystemUrl);
       this.rows$ = of(res.tw_contactos_corporativo);
+    });
+    
+    this.subscriptions.push(subs);
+
+    setTimeout(()=>{
       this.cdr.detectChanges();
-    }
-  )
+    },2000);
+    
+   
+
+    
+    
   }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(element => {
+      element.unsubscribe();
+    });
+  }
+
 
 }

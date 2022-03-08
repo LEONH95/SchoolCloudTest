@@ -117,7 +117,7 @@
               <ngx-datatable-column name="ACCIONES" [width]="50">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   <a routerLink="detalle/{{row.id}}"><i class="far fa-eye text-info cursor-pointer"></i></a>
-                  <a routerLink="/pages/users-edit"><i class="ml-2 far fa-check-circle text-muted cursor-pointer"></i></a>
+                  <a [routerLink]=""><i class="ml-2 far fa-check-circle text-muted cursor-pointer"></i></a>
                 </ng-template>
               </ngx-datatable-column>
             </ngx-datatable> 
