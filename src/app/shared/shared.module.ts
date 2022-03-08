@@ -75,7 +75,7 @@ import { TopMenuAnchorToggleDirective } from './directives/topmenu-anchor-toggle
         TopMenuLinkDirective,
         TopMenuDropdownDirective,
         TopMenuAnchorToggleDirective,
-        TopMenuDirective,
+        TopMenuDirective
     ]
 })
 export class SharedModule { }

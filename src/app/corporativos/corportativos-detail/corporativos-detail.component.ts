@@ -1,13 +1,14 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CorporativosService } from '../_services/corporativos.service';
-import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { Corporativo, CorporativoModel } from '../_models/corporativo';
 import { NgbDateStruct, NgbDatepickerI18n, NgbCalendar} from '@ng-bootstrap/ng-bootstrap';
 import { getObjectDate, getStringDate } from '../../helpers/util/dateUtil';
 import { DatatableComponent, ColumnMode } from '@swimlane/ngx-datatable';
 import { forkJoin, Observable, of, Subscription, zip } from 'rxjs';
 import { map } from 'rxjs/operators';
+import * as swalFunctions from '../../shared/alerts/alerts.functions';
 
 
 @Component({
@@ -38,7 +39,7 @@ export class CorporativosDetailComponent implements OnInit, OnDestroy {
   public title = null;
   public fkAsignado: number;
   public isEdit: boolean = true;
-  public isEditContacto: boolean = true;
+  public isEditContacto: boolean = false;
 
   public subscriptions: Subscription[] = [];
 
@@ -52,7 +53,7 @@ export class CorporativosDetailComponent implements OnInit, OnDestroy {
 
   public contactosForm = this.fb.group({
     id: [''],
-    S_Nombre: [''],
+    S_Nombre: ['', Validators.required],
     S_Puesto: [''],
     S_Comentarios: [''],
     N_TelefonoFijo: [null],
